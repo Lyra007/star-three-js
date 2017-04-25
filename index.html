@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>stars</title>
+<style type="text/css">
+	body{
+		background-color: black;
+	}
+</style>
+
+</head>
+<body>
+<script type="text/javascript" src="Three.js"></script>
+<script >
+	//the main three.js components
+	var camera, scene, renderer,
+
+	//to keep track of the mouse position
+	mouseX = 0, mouseY = 0,
+
+	//an array to store particles in 
+	particles = [];
+
+	init();
+
+function init() {
+	//camera
+	// camera params;
+	camera = new THREE.PerspectiveCamera(80, window.innerWidth/window.innerHeight, 1, 4000);
+
+	camera.position.z=1000;
+
+	//scene
+	//the scene contains all the 3d object data
+	scene = new THREE.Scene();
+	scene.add(camera);
+
+	renderer = new THREE.CanvasRenderer();
+	renderer.setSize( window.innerWidth, window.innerHeight);
+
+	document.body.appendChild( renderer.domElement);
+
+	makeParticles();
+
+	//add the mouse move listener
+	document.addEventListener('mousemove', onMouseMove, false);
+
+	setInterval(update, 1000/30);
+
+}
+
+function update(){
+	updateParticles();
+
+	renderer.render(scene, camera);
+}
+
+function makeParticles(){
+
+	var particle, material;
+	for( var zpos = 1000; zpos>-1000; zpos-=20){
+
+		material = new THREE.ParticleCanvasMaterial({
+			color: getRandomColor(),
+			program: particleRender
+		});
+
+		particle = new THREE.Particle(material);
+		
+		particle.position.x = Math.random() * 1000 -500;
+		
+		particle.position.y = Math.random() * 1000 -500;		
+
+		particle.position.z = zpos;
+
+		particle.scale.x=particle.scale.y = 10;
+
+		scene.add(particle);
+
+		particles.push(particle);
+
+	}
+}
+
+function getRandomColor() {
+    var r = 255*Math.random()|0,
+        g = 255*Math.random()|0,
+        b = 255*Math.random()|0;
+    // return 'rgb(' + r + ',' + g + ',' + b + ')';
+    return '0x' + parseInt(r, 16) + parseInt(g, 16) + parseInt( b, 16);
+}
+
+
+	function particleRender(context){
+		context.beginPath();
+		context.arc(0,0,1,0,2*Math.PI, true);
+		context.fill();
+	}
+
+	function updateParticles(){
+		for(var i=0; i<particles.length; i++){
+			particle=particles[i];
+
+			particle.position.z += mouseY* 0.1;
+
+			if( particle.position.z >1000)
+				particle.position.z -=2000;
+		}
+	
+
+}
+
+function onMouseMove( event ) {
+				// store the mouseX and mouseY position 
+				mouseX = event.clientX;
+				mouseY = event.clientY;
+			}
+
+
+
+
+</script>
+</body>
+</html>
